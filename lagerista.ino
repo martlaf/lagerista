@@ -62,8 +62,19 @@ void loop() {
   steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
   steinhart = 1.0 / steinhart;                 // Invert
   steinhart -= 273.15;                         // convert to C
-  
 
+
+  
+  lcd.setCursor(0, 0);
+  lcd.print(getUserTemp());
+  
+  lcd.setCursor(0, 1);
+  lcd.print(average);
+
+}
+
+
+float getUserTemp() {
   static float set_temp = 20;
   static unsigned long milliseconds;
   static unsigned long sw_timer;
@@ -100,11 +111,7 @@ void loop() {
     sw_up = false;
     sw_hold_up = false;
   }
-  
-  lcd.setCursor(0, 0);
-  lcd.print(set_temp);
-  
-  lcd.setCursor(0, 1);
-  lcd.print(average);
 
-}
+  return set_temp;
+}  
+
