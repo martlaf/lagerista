@@ -42,15 +42,36 @@ void setup() {
 }
 
 void loop() {
+  
+  float measuredTemp = getMeasuredTemp();
 
+  printMeasuredTemp(measuredTemp);
+  
+  lcd.setCursor(0, 0);
+  lcd.print(getUserTemp());
 
-  static uint8_t i = 0;
-  float sum = 0, average, steinhart;
+}
+
+void printMeasuredTemp(float temp) {
+  lcd.setCursor(0,1);
+  if (temp < -30.0) {
+    lcd.print('      ');
+  } else {
+    lcd.print(temp);
+  }
+  
+}
+
+float getMeasuredTemp() {
+
   static float values[NUMSAMPLES];
+  static uint8_t iteration = 0;
+  
+  float sum = 0, average, steinhart;
 
-  values[i] = analogRead(THERMISTORPIN);
-  i++;
-  if (i == NUMSAMPLES) i = 0;
+  values[iteration] = analogRead(THERMISTORPIN);
+  iteration++;
+  if (iteration == NUMSAMPLES) iteration = 0;
 
   for (uint8_t index = 0; index < NUMSAMPLES; index++) sum += values[index];
   average = sum / NUMSAMPLES;
@@ -63,47 +84,41 @@ void loop() {
   steinhart = 1.0 / steinhart;                 // Invert
   steinhart -= 273.15;                         // convert to C
 
-
-  
-  lcd.setCursor(0, 0);
-  lcd.print(getUserTemp());
-  
-  lcd.setCursor(0, 1);
-  lcd.print(average);
-
+  return steinhart;
 }
 
-
 float getUserTemp() {
-  static float set_temp = 20;
-  static unsigned long milliseconds;
+  static float set_temp = 20.0;
   static unsigned long sw_timer;
   static bool sw_up = 0, sw_hold_up = 0, sw_down = 0, sw_hold_down = 0;
-  milliseconds = millis();
+
+  unsigned long currentMillis = millis();
+  
   if (!digitalRead(SWITCHDOWNPIN) && !sw_down) {
       sw_down=true;
-      sw_timer=milliseconds;
+      sw_timer=currentMillis;
       set_temp -= 0.1;
   } else if (!digitalRead(SWITCHDOWNPIN) && sw_down) {
-    if ((!sw_hold_down) && (milliseconds >= (sw_timer + 1000.0))){
-      set_temp -= 0.1;
+    if ((!sw_hold_down) && (currentMillis >= sw_timer + 1000.0)){
       sw_hold_down = true;
-      sw_timer = milliseconds;
-    } else if (sw_hold_down && (milliseconds > (sw_timer + 200.0))) {
+      sw_timer = currentMillis;
       set_temp -= 0.1;
-      sw_timer = milliseconds;
+    } else if (sw_hold_down && (currentMillis > sw_timer + 200.0)) {
+      sw_timer = currentMillis;
+      set_temp -= 0.1;
     }
   } else if (!digitalRead(SWITCHUPPIN) && !sw_up) {
       sw_up=true;
-      sw_timer=milliseconds;
+      sw_timer=currentMillis;
       set_temp += 0.1;
   } else if (!digitalRead(SWITCHUPPIN) && sw_up) {
-    if (!sw_hold_up && (milliseconds > sw_timer + 1000)){
+    if (!sw_hold_up && (currentMillis > sw_timer + 1000)){
       sw_hold_up = true;
-      sw_timer = milliseconds;
-    } else if (sw_hold_up && (milliseconds > sw_timer + 200)) {
+      sw_timer = currentMillis;
       set_temp += 0.1;
-      sw_timer = milliseconds;
+    } else if (sw_hold_up && (currentMillis > sw_timer + 200)) {
+      sw_timer = currentMillis;
+      set_temp += 0.1;
     }
   } else {
     sw_down = false;
