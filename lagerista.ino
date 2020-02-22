@@ -55,7 +55,7 @@ void loop() {
 void printMeasuredTemp(float temp) {
   lcd.setCursor(0,1);
   if (temp < -30.0) {
-    lcd.print('      ');
+    lcd.print("      ");
   } else {
     lcd.print(temp);
   }
