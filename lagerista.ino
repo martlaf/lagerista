@@ -1,12 +1,6 @@
 #include <LiquidCrystal.h>
+#include "Thermistor.h"
 
-//thermistor variables
-#define SERIESRESISTOR 10000 
-#define THERMISTORPIN A0
-#define THERMISTORNOMINAL 10000
-#define TEMPERATURENOMINAL 25
-#define NUMSAMPLES 100
-#define BCOEFFICIENT 4016.4
 
 //drive variables
 #define HEAT_PWM_PIN 10
@@ -22,11 +16,11 @@
 #define SWITCHUPPIN 1
 
 
-
 // LCD pins
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+Thermistor temperatureProbe(14);
 
 void setup() {
   lcd.begin(16, 2);
@@ -42,49 +36,40 @@ void setup() {
 }
 
 void loop() {
+  temperatureProbe.update();
   
-  float measuredTemp = getMeasuredTemp();
+  lcd.setCursor(0,1);
 
-  printMeasuredTemp(measuredTemp);
+  
+  float temp = temperatureProbe.getTemp();
+  String strTemp = String(temp,1);
+  
+  if (temperatureProbe.isValid()) {
+    lcd.print(String(temp,1));
+    for (int i=0; i < 6 - strTemp.length(); i++) lcd.print(" ");
+  } else {
+    lcd.print("      ");
+  }
+  
+  //printMeasuredTemp(temperatureProbe.getTemp());
   
   lcd.setCursor(0, 0);
-  lcd.print(getUserTemp());
+  lcd.print(String(getUserTemp(),1));
 
 }
 
 void printMeasuredTemp(float temp) {
-  lcd.setCursor(0,1);
+  char string [16];
+  int character;
   if (temp < -30.0) {
-    lcd.print("      ");
+    lcd.print("       ");
   } else {
-    lcd.print(temp);
+    //character = 
+    //lcd.print(temp2str(temp,3));
+    //sprintf(string,"%.1f",temp);
+    //lcd.print(std::setprecision(1)<<temp);
   }
   
-}
-
-float getMeasuredTemp() {
-
-  static float values[NUMSAMPLES];
-  static uint8_t iteration = 0;
-  
-  float sum = 0, average, steinhart;
-
-  values[iteration] = analogRead(THERMISTORPIN);
-  iteration++;
-  if (iteration == NUMSAMPLES) iteration = 0;
-
-  for (uint8_t index = 0; index < NUMSAMPLES; index++) sum += values[index];
-  average = sum / NUMSAMPLES;
-  average = 1023 / average - 1;
-  average = SERIESRESISTOR / average;
-  steinhart = average / THERMISTORNOMINAL;     // (R/Ro)
-  steinhart = log(steinhart);                  // ln(R/Ro)
-  steinhart /= BCOEFFICIENT;                   // 1/B * ln(R/Ro)
-  steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-  steinhart = 1.0 / steinhart;                 // Invert
-  steinhart -= 273.15;                         // convert to C
-
-  return steinhart;
 }
 
 float getUserTemp() {
