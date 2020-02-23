@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
 #include "Thermistor.h"
-
+#include "DiscretePID.h"
 
 //drive variables
 #define HEAT_PWM_PIN 10
@@ -21,6 +21,7 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 Thermistor temperatureProbe(14);
+DiscretePID pid(400,200,10);
 
 void setup() {
   lcd.begin(16, 2);
