@@ -26,3 +26,4 @@ class Thermistor
 };
 
 #endif
+

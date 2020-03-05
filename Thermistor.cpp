@@ -38,11 +38,12 @@ String Thermistor::strTemp(int precision) {
 }
 
 bool Thermistor::isValid() {
-  if (mTemp < 130.0 && mTemp > 0.0) {
+  if (mTemp < 130.0 && mTemp > -30.0) {
     return true;
   } else {
     return false;
   }
 }
+
 
 

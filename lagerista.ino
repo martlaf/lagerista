@@ -16,64 +16,46 @@
 #define SWITCHDOWNPIN 0
 #define SWITCHUPPIN 1
 
-
-// LCD pins
-//const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+Thermistor probe(14);
+DiscretePID pid(400, 200, 10);
 ThreePinFanPWM fan(6);
 
-Thermistor temperatureProbe(14);
-DiscretePID pid(400,200,10);
 
 void setup() {
   lcd.begin(16, 2);
 
-  pinMode(FANPWMPIN, OUTPUT);
-  analogWrite(FANPWMPIN, 0);
-  
-  pinMode(SWITCHUPPIN, INPUT);
-  pinMode(SWITCHDOWNPIN, INPUT);
+  pinMode(SWITCHUPPIN, INPUT_PULLUP);
+  pinMode(SWITCHDOWNPIN, INPUT_PULLUP);
 
   analogReference(EXTERNAL);
 
 }
 
+  
 void loop() {
-  temperatureProbe.update();
   
-  lcd.setCursor(0,1);
-
+  probe.update();
   
-  float temp = temperatureProbe.getTemp();
-  String strTemp = String(temp,1);
+  lcd.setCursor(0, 1);
   
-  if (temperatureProbe.isValid()) {
-    lcd.print(String(temp,1));
-    for (int i=0; i < 6 - strTemp.length(); i++) lcd.print(" ");
+  float temp = probe.getTemp();
+  String strTemp = probe.strTemp(1);
+  
+  if (probe.isValid()) {
+    lcd.print(strTemp);
+    for (int i = 0; i < 6 - strTemp.length(); i++) lcd.print(" ");
   } else {
     lcd.print("      ");
   }
-  
-  //printMeasuredTemp(temperatureProbe.getTemp());
-  
+
   lcd.setCursor(0, 0);
-  lcd.print(String(getUserTemp(),1));
+  lcd.print(String(getUserTemp(), 1));
 
+  //fan.setSpeed(100);
+  digitalWrite(6, HIGH);
 }
 
-void printMeasuredTemp(float temp) {
-  char string [16];
-  int character;
-  if (temp < -30.0) {
-    lcd.print("       ");
-  } else {
-    //character = 
-    //lcd.print(temp2str(temp,3));
-    //sprintf(string,"%.1f",temp);
-    //lcd.print(std::setprecision(1)<<temp);
-  }
-  
-}
 
 float getUserTemp() {
   static float set_temp = 20.0;
@@ -81,13 +63,13 @@ float getUserTemp() {
   static bool sw_up = 0, sw_hold_up = 0, sw_down = 0, sw_hold_down = 0;
 
   unsigned long currentMillis = millis();
-  
+
   if (!digitalRead(SWITCHDOWNPIN) && !sw_down) {
-      sw_down=true;
-      sw_timer=currentMillis;
-      set_temp -= 0.1;
+    sw_down = true;
+    sw_timer = currentMillis;
+    set_temp -= 0.1;
   } else if (!digitalRead(SWITCHDOWNPIN) && sw_down) {
-    if ((!sw_hold_down) && (currentMillis >= sw_timer + 1000.0)){
+    if ((!sw_hold_down) && (currentMillis >= sw_timer + 1000.0)) {
       sw_hold_down = true;
       sw_timer = currentMillis;
       set_temp -= 0.1;
@@ -96,11 +78,11 @@ float getUserTemp() {
       set_temp -= 0.1;
     }
   } else if (!digitalRead(SWITCHUPPIN) && !sw_up) {
-      sw_up=true;
-      sw_timer=currentMillis;
-      set_temp += 0.1;
+    sw_up = true;
+    sw_timer = currentMillis;
+    set_temp += 0.1;
   } else if (!digitalRead(SWITCHUPPIN) && sw_up) {
-    if (!sw_hold_up && (currentMillis > sw_timer + 1000)){
+    if (!sw_hold_up && (currentMillis > sw_timer + 1000)) {
       sw_hold_up = true;
       sw_timer = currentMillis;
       set_temp += 0.1;
@@ -116,5 +98,6 @@ float getUserTemp() {
   }
 
   return set_temp;
-}  
+}
+
 
