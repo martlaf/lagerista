@@ -4,7 +4,7 @@
 class DiscretePID
 {
   public:
-    DiscretePID(float Kp, float Ki, float Kd);
+    DiscretePID(float Kp, float Ki, float Kd): mKp(Kp), mKi(Ki), mKd(Kd) {};
     double compute(double error);
 
   private:
@@ -14,3 +14,4 @@ class DiscretePID
 };
 
 #endif
+
