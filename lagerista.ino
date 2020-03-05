@@ -1,6 +1,7 @@
 #include <LiquidCrystal.h>
 #include "Thermistor.h"
 #include "DiscretePID.h"
+#include "ThreePinFanPWM.h"
 
 //drive variables
 #define HEAT_PWM_PIN 10
@@ -9,7 +10,7 @@
 #define COOL_EN_PIN 13
 
 //fan variables
-#define FANPWMPIN 6
+//#define FANPWMPIN 6
 
 //switch variables
 #define SWITCHDOWNPIN 0
@@ -19,6 +20,7 @@
 // LCD pins
 //const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+ThreePinFanPWM fan(6);
 
 Thermistor temperatureProbe(14);
 DiscretePID pid(400,200,10);
