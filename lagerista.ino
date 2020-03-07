@@ -52,8 +52,8 @@ void loop() {
   lcd.setCursor(0, 0);
   lcd.print(String(getUserTemp(), 1));
 
-  //fan.setSpeed(100);
-  digitalWrite(6, HIGH);
+  fan.setSpeed(100);
+  
 }
 
 

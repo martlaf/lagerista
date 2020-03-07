@@ -13,7 +13,7 @@ ThreePinFanPWM::ThreePinFanPWM(uint8_t pinOut, uint8_t pinIn): mPinOut(pinOut), 
 }
 
 void ThreePinFanPWM::setSpeed(float percentage) {
-  analogWrite(mPinOut, (percentage * 255));
+  analogWrite(mPinOut, (percentage * 2.55));
 }
 
 
