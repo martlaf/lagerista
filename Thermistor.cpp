@@ -34,7 +34,7 @@ float Thermistor::getTemp() {
 }
 
 String Thermistor::strTemp(int precision) {
-  return String(mTemp,1);
+  return String(this -> getTemp(),1);
 }
 
 bool Thermistor::isValid() {

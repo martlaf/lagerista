@@ -39,7 +39,6 @@ void loop() {
   
   lcd.setCursor(0, 1);
   
-  float temp = probe.getTemp();
   String strTemp = probe.strTemp(1);
   
   if (probe.isValid()) {
