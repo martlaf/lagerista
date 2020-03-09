@@ -2,15 +2,7 @@
 #include "Thermistor.h"
 #include "DiscretePID.h"
 #include "ThreePinFanPWM.h"
-
-//drive variables
-#define HEAT_PWM_PIN 10
-#define COOL_PWM_PIN 11
-#define HEAT_EN_PIN 12
-#define COOL_EN_PIN 13
-
-//fan variables
-//#define FANPWMPIN 6
+#include "BTS7960b.h"
 
 //switch variables
 #define SWITCHDOWNPIN 0
@@ -20,7 +12,7 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 Thermistor probe(14);
 DiscretePID pid(400, 200, 10);
 ThreePinFanPWM fan(6);
-
+BTS7960bHBridge peltier(7,9,8,10);
 
 void setup() {
   lcd.begin(16, 2);
@@ -54,6 +46,8 @@ void loop() {
   fan.setSpeed(100);
   
 }
+
+
 
 
 float getUserTemp() {
