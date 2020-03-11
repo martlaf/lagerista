@@ -1,6 +1,6 @@
 #include <LiquidCrystal.h>
+#include <PID_v1.h>  //Thanks to Brett Beauregard
 #include "Thermistor.h"
-#include "DiscretePID.h"
 #include "ThreePinFanPWM.h"
 #include "BTS7960b.h"
 
@@ -8,15 +8,20 @@
 #define SWITCHDOWNPIN 0
 #define SWITCHUPPIN 1
 
+double errorTemp, controlVal, setTemp;
+double kP = 400.0, kI = 200.0, kD = 10.0;
+PID pid(&errorTemp, &controlVal, &setTemp, kP, kI, kD, DIRECT);
+
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 Thermistor probe(14);
-DiscretePID pid(400, 200, 10);
 ThreePinFanPWM fan(6);
 BTS7960bHBridge peltier(7,9,8,10);
 
 void setup() {
   lcd.begin(16, 2);
-
+  peltier.setActive();
+  pid.SetMode(AUTOMATIC);
+  
   pinMode(SWITCHUPPIN, INPUT_PULLUP);
   pinMode(SWITCHDOWNPIN, INPUT_PULLUP);
 
@@ -28,12 +33,16 @@ void setup() {
 void loop() {
   
   probe.update();
+  pid.Compute();
   
-  lcd.setCursor(0, 1);
-  
-  String strTemp = probe.strTemp(1);
+  fan.setSpeed(100.0);
   
   if (probe.isValid()) {
+    
+    
+    // printing value to LCD
+    lcd.setCursor(0, 1);
+    String strTemp = probe.strTemp(1);
     lcd.print(strTemp);
     for (int i = 0; i < 6 - strTemp.length(); i++) lcd.print(" ");
   } else {
@@ -43,7 +52,6 @@ void loop() {
   lcd.setCursor(0, 0);
   lcd.print(String(getUserTemp(), 1));
 
-  fan.setSpeed(100);
   
 }
 

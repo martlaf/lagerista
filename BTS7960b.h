@@ -1,3 +1,11 @@
+/**********************************************************************************************
+ * Arduino BTS7960b Library
+ * Author: Martin Lafrance
+ *         lafrance.martin@gmail.com
+ *         
+ * This library supports both the chip itself and the full H-Bridge board
+ **********************************************************************************************/
+
 #ifndef BTS7960B_H
 #define BTS7960B_H
 using namespace std;
@@ -12,6 +20,7 @@ class BTS7960bHalf
     void setInactive();
     float getIntensity();
     bool isActive();
+    float getCurrent();
     
   protected:
     uint8_t mEnPin, mPwmPin, mIsPin;

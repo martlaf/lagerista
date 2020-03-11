@@ -1,3 +1,11 @@
+/**********************************************************************************************
+ * Arduino BTS7960b Library
+ * Author: Martin Lafrance
+ *         lafrance.martin@gmail.com
+ *         
+ * This library supports both the chip itself and the full H-Bridge board
+ **********************************************************************************************/
+ 
 #include <Arduino.h>
 #include "BTS7960b.h"
 
@@ -41,6 +49,11 @@ bool BTS7960bHalf::isActive(){
   return mEnable;
 }
 
+float BTS7960bHalf::getCurrent(){
+  float currentSense = analogRead(mIsPin);
+  return currentSense;
+}
+
 BTS7960bHBridge::BTS7960bHBridge(uint8_t r_en, uint8_t r_pwm, uint8_t l_en, uint8_t l_pwm)
       : BTS7960bHalf(r_en, r_pwm), mSpareEnPin(l_en), mSparePwmPin(l_pwm){
   
@@ -60,14 +73,14 @@ void BTS7960bHBridge::setIntensity(float intensity) {
     switchSides();
   }
 
-  this->BTS7960bHalf::setIntensity(abs(intensity));
+  BTS7960bHalf::setIntensity(abs(intensity));
 }
 
 void BTS7960bHBridge::switchSides() {
   
   mIsRightSide != mIsRightSide;
 
-  setInactive();
+  BTS7960bHalf::setInactive();
   
   uint8_t oldEnPin = mEnPin;
   uint8_t oldPwmPin = mPwmPin;
@@ -81,13 +94,13 @@ void BTS7960bHBridge::switchSides() {
   mSparePwmPin = oldPwmPin;
   mSpareIsPin = oldIsPin;
 
-  setActive();
+  BTS7960bHalf::setActive();
   
 }
 
 float BTS7960bHBridge::getIntensity(){
   if (mIsRightSide) return mIntensity;
-
   return -mIntensity;
 }
+
 

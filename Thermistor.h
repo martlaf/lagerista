@@ -1,6 +1,7 @@
 #ifndef THERMISTOR_H
 #define THERMISTOR_H
 
+//to be defined by front-end!!
 #define NUMSAMPLES 100
 #define SERIESRESISTOR 10000 
 #define THERMISTORNOMINAL 10000
