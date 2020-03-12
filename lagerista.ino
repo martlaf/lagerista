@@ -7,6 +7,7 @@
 //switch variables
 #define SWITCHDOWNPIN 0
 #define SWITCHUPPIN 1
+#define BACKLIGHTPIN A5
 
 double errorTemp, controlVal, setTemp;
 double kP = 400.0, kI = 200.0, kD = 10.0;
@@ -24,6 +25,8 @@ void setup() {
   
   pinMode(SWITCHUPPIN, INPUT_PULLUP);
   pinMode(SWITCHDOWNPIN, INPUT_PULLUP);
+  pinMode(BACKLIGHTPIN, OUTPUT);
+  digitalWrite(BACKLIGHTPIN, LOW);
 
   analogReference(EXTERNAL);
 
@@ -66,6 +69,7 @@ float getUserTemp() {
   unsigned long currentMillis = millis();
 
   if (!digitalRead(SWITCHDOWNPIN) && !sw_down) {
+    digitalWrite(BACKLIGHTPIN, HIGH);
     sw_down = true;
     sw_timer = currentMillis;
     set_temp -= 0.1;
@@ -79,6 +83,7 @@ float getUserTemp() {
       set_temp -= 0.1;
     }
   } else if (!digitalRead(SWITCHUPPIN) && !sw_up) {
+    digitalWrite(BACKLIGHTPIN, HIGH);
     sw_up = true;
     sw_timer = currentMillis;
     set_temp += 0.1;
@@ -96,6 +101,7 @@ float getUserTemp() {
     sw_hold_down = false;
     sw_up = false;
     sw_hold_up = false;
+    if (millis() > sw_timer + 5000) digitalWrite(BACKLIGHTPIN, LOW);
   }
 
   return set_temp;
