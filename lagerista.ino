@@ -49,6 +49,7 @@ void loop() {
     lcd.print(strTemp);
     for (int i = 0; i < 6 - strTemp.length(); i++) lcd.print(" ");
   } else {
+    lcd.setCursor(0, 1);
     lcd.print("      ");
   }
 
