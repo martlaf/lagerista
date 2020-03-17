@@ -39,7 +39,7 @@ class BTS7960bHBridge : public BTS7960bHalf
   private:
     void switchSides();
     uint8_t mSpareEnPin, mSparePwmPin, mSpareIsPin;
-    bool mIsRightSide = 1;
+    bool mIsRightSide = true;
 };
 
 

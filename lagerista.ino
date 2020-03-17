@@ -16,7 +16,7 @@ PID pid(&errorTemp, &controlVal, &setTemp, kP, kI, kD, DIRECT);
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 Thermistor probe(14);
 ThreePinFanPWM fan(6);
-BTS7960bHBridge peltier(7,9,8,10);
+BTS7960bHBridge peltier(8,10,7,9);
 
 void setup() {
   lcd.begin(16, 2);
@@ -39,10 +39,11 @@ void loop() {
   pid.Compute();
   
   fan.setSpeed(100.0);
+
+  peltier.setIntensity(100.0);
+
   
   if (probe.isValid()) {
-    
-    
     // printing value to LCD
     lcd.setCursor(0, 1);
     String strTemp = probe.strTemp(1);
@@ -55,7 +56,6 @@ void loop() {
 
   lcd.setCursor(0, 0);
   lcd.print(String(getUserTemp(), 1));
-
   
 }
 
