@@ -69,7 +69,7 @@ BTS7960bHBridge::BTS7960bHBridge(uint8_t r_en, uint8_t r_pwm, uint8_t l_en, uint
   
   pinMode(mSpareEnPin, OUTPUT);
   pinMode(mSparePwmPin, OUTPUT);
-  digitalWrite(mSpareEnPin, LOW);
+  digitalWrite(mSpareEnPin, HIGH);
   digitalWrite(mSparePwmPin, LOW);
 }
 
@@ -82,15 +82,17 @@ void BTS7960bHBridge::setIntensity(float intensity) {
   } else if (intensity < 0 && mIsRightSide) {
     switchSides();
   }
-
+  
+  //set high side to desired voltage
   BTS7960bHalf::setIntensity(abs(intensity));
 }
 
 void BTS7960bHBridge::switchSides() {
   
   mIsRightSide = !mIsRightSide;
-
-  BTS7960bHalf::setInactive();
+  
+  //set low side to ground
+  BTS7960bHalf::setIntensity(0.0);
   
   uint8_t oldEnPin = mEnPin;
   uint8_t oldPwmPin = mPwmPin;
@@ -104,9 +106,6 @@ void BTS7960bHBridge::switchSides() {
   mSparePwmPin = oldPwmPin;
   mSpareIsPin = oldIsPin;
 
-  BTS7960bHalf::setActive();
-  
-  digitalWrite(mSpareEnPin, LOW);
 }
 
 float BTS7960bHBridge::getIntensity(){
