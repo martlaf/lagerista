@@ -1,0 +1,29 @@
+Heat sink selection
+------------------------------------------
+
+The obvious part is that you have to evacuate the full power of the Peltier device, plus the heat taken from the thermal mass we are regulating. Also, we have to consider price, air mass flow of fan, noise level, and mechanical compatibility with system.
+
+With all that in mind, I chose ThermalTake Gravity i2 fan for the following reasons :
+- Comes as aluminum sink pre-assembled with fan on top, spring-loaded screws I could easily mount on custom-made system
+- Low noise level (21.3 dBa)
+- High mass flow (31.3 CFM)
+- Appropriate cooling power (95W), allowing potential Peltier upgrade
+- Cheap (found on newegg.ca for 19.33$CAD, taxes and shipping included)
+
+
+FAN PWM drive
+------------------------------------------
+
+While doing the design, one of the first questions that needed to be answered was whether there was some value in controlling the cooler fan with some simple logic. I have to say that before actually having bought the fan and plugged it onto 12V power, there is not much way to tell if after months with it running possibly in the same room as you, you'd want to control either it's on/off state, or having a speed controller to run it at lower speed if there was benefits on the noise/required cooling ratio.
+
+With other options still viable (always on or contactor relay), I decided to go with speed control. Without sufficient electronic background to do it all myself, I have to thank James Lewis at BaldEngineer.com for his article on measuring a 3-pin fan speed with PWM signal:
+
+https://www.baldengineer.com/pwm-3-pin-pc-fan-arduino.html
+
+With only the need to drive it without a priori necessity of speed measurement, I dropped the capacitors, and used the high-side switch to go from 5V logic PWM to 12V drive PWM. I just had ton considerably lower the base resistor value for the PNP BJT. While looking back at my calculation, I realised it doesn't make any sense whatsoever for multiple reasons; but I remember moving progressively to this (calculated) value and noticing that I was getting a spot on 12V voltage difference on my load, "confirming" my calcultation.
+
+What you should do (not what I did) :
+	- I_base = I_collector / beta = (I_emitter + I_base) / beta = I_emitter / (beta - 1)
+	- R = (VCC - VBE) / I_base
+
+However, this brings me to a value for base resistor way too high to allow any switching of the transistor. This has to be corrected next time I (or someone else) passes here to actually calculate a system.

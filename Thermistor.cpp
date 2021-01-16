@@ -17,7 +17,6 @@ void Thermistor::update() {
   
   for (uint8_t i = 0; i < NUMSAMPLES; i++) sum += mValues[i];
 
-  // obviously single-threaded here
   average = sum / NUMSAMPLES;
   average = 1023 / average - 1;
   average = SERIESRESISTOR / average;
@@ -45,6 +44,3 @@ bool Thermistor::isValid() {
     return false;
   }
 }
-
-
-
