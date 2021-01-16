@@ -16,13 +16,13 @@ PID pid(&errorTemp, &controlVal, &setTemp, kP, kI, kD, DIRECT);
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 Thermistor probe(14);
 ThreePinFanPWM fan(6);
-BTS7960bHBridge peltier(8,10,7,9);
+BTS7960bHBridge peltier(8, 10, 7, 9);
 
 void setup() {
   lcd.begin(16, 2);
   peltier.setActive();
   pid.SetMode(AUTOMATIC);
-  
+
   pinMode(SWITCHUPPIN, INPUT_PULLUP);
   pinMode(SWITCHDOWNPIN, INPUT_PULLUP);
   pinMode(BACKLIGHTPIN, OUTPUT);
@@ -32,31 +32,54 @@ void setup() {
 
 }
 
-  
+
 void loop() {
-  
+
   probe.update();
   pid.Compute();
-  
-  fan.setSpeed(100.0);
 
-  peltier.setIntensity(100.0);
+  static float fanSpeed = 50.0;
+  fan.setSpeed(fanSpeed);
 
-  
+  peltier.setIntensity(-100.0);
+  //Serial.begin(9600);
+
+
   if (probe.isValid()) {
-    // printing value to LCD
+    //get user temp
+    lcd.setCursor(0, 0);
+    lcd.print("Set=");
+    lcd.print(String(getUserTemp(), 1));
+
+    //print power percentage sent to Peltier device
+    lcd.setCursor(10, 0);
+    lcd.print("P=");
+    float power = peltier.getIntensity();
+    if (power > 0.) lcd.print(" ");
+    if (abs(power) < 100.) lcd.print(" ");
+    lcd.print(String(power, 0));
+
+    //print measured temp
     lcd.setCursor(0, 1);
+    lcd.print("Cur=");
     String strTemp = probe.strTemp(1);
     lcd.print(strTemp);
     for (int i = 0; i < 6 - strTemp.length(); i++) lcd.print(" ");
+
+    //print fan speen in percentage
+    lcd.setCursor(10,1);
+    lcd.print("F= ");
+    if (fanSpeed < 100.) lcd.print(" ");
+    lcd.print(String(fanSpeed, 0));
+
   } else {
+    lcd.setCursor(0, 0);
+    lcd.print("               ");
     lcd.setCursor(0, 1);
-    lcd.print("      ");
+    lcd.print("               ");
   }
 
-  lcd.setCursor(0, 0);
-  lcd.print(String(getUserTemp(), 1));
-  
+
 }
 
 
@@ -102,10 +125,8 @@ float getUserTemp() {
     sw_hold_down = false;
     sw_up = false;
     sw_hold_up = false;
-    if (millis() > sw_timer + 5000) digitalWrite(BACKLIGHTPIN, LOW);
+    if (millis() > sw_timer + 10000) digitalWrite(BACKLIGHTPIN, LOW);
   }
 
   return set_temp;
 }
-
-
